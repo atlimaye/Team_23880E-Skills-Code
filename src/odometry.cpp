@@ -20,7 +20,6 @@ double STrackRadius = 5.85;
 
 //Calculated Values (every loop)
 //Angles (DEGREES) *NEEDS TO BE CONVERTED TO RADIANS FOR MATH*
-double LPos = 0;
 double RPos = 0;
 double SPos = 0;
 
@@ -67,29 +66,19 @@ double yPosGlobal = Y_START;
 int positionTracking() {
   while(1) {
     //Get encoder values (DEGREES)
-    
-    LPos = LTrack.position(rotationUnits::deg);
     RPos = RTrack.position(rotationUnits::deg);
     SPos = STrack.position(rotationUnits::deg);
 
     //Calculate distance traveled by tracking each wheel (INCHES)
       //Converts degrees to radians
-    deltaDistL = ((LPos - LPrevPos) * M_PI / 180) * WHEEL_RADIUS;
     deltaDistR = ((RPos - RPrevPos) * M_PI / 180) * WHEEL_RADIUS;
     deltaDistS = ((SPos - SPrevPos) * M_PI / 180) * WHEEL_RADIUS;
 
     //Update previous values to be used next loop (DEGREES)
-    LPrevPos = LPos;
     RPrevPos = RPos;
     SPrevPos = SPos;
 
-    //Total change in each of the L and R encoders since last reset (INCHES)
-    //These are used to calculate the absolute orientation of the bot
-    totalDeltaDistL += deltaDistL;
-    totalDeltaDistR += deltaDistR;
-
     //Calculate the current absolute orientation (RADIANS)
-    //currentAbsoluteOrientation = THETA_START - ( (totalDeltaDistL - totalDeltaDistR) / (LTrackRadius + RTrackRadius) );
     currentAbsoluteOrientation = (360 - Inertial6.heading(rotationUnits::deg)) * M_PI / 180.0;
 
     //Calculate the change in the angle of the bot (RADIANS)
@@ -116,7 +105,6 @@ int positionTracking() {
 
     //The average angle of the robot during it's arc (RADIANS)
     avgThetaForArc = currentAbsoluteOrientation - (deltaTheta / 2);
-
     deltaXGlobal = (deltaYLocal * cos(avgThetaForArc)) - (deltaXLocal * sin(avgThetaForArc));
     deltaYGlobal = (deltaYLocal * sin(avgThetaForArc)) + (deltaXLocal * cos(avgThetaForArc));
 
